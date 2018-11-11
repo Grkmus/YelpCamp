@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var User = require("../models/user");
 var passport = require("passport");
+const indexService = require('../services/index-service')
 
 //=============LANDING PAGE==========//
 router.get('/', function(req,res){
@@ -14,29 +15,27 @@ router.get('/', function(req,res){
 router.get('/register', function(req, res) {
     res.render('register');
 });
+
 //Sign up Logic
-router.post('/register', function(req, res) {
-    User.register(new User({username: req.body.username}), req.body.password, function (err, user) {
-        if(err){
-            req.flash("error", err.message);
-            return res.redirect('/register');
-        }
-        passport.authenticate("local")(req, res, function(){
-            req.flash("success", "Welcome to YelpCamp " + user.username);
-            res.redirect('/campgrounds');
-        });
-    }); 
+router.post('/register', async function(req, res) {
+    return await indexService.registerUser(req, res).catch(err => {
+        console.log(err)
+    })
 });
 
 router.get('/login', function(req, res) {
     res.render('login');
 });
 
+router.get('/not-found', function(req, res) {
+    res.render('not-found');
+});
+
 router.post('/login', passport.authenticate('local',{
-    successRedirect: '/campgrounds',
-    failureRedirect: '/login'
-}), function () {
-    console.lof("req");
+        successRedirect: '/campgrounds',
+        failureRedirect: '/login'
+    }),() => {
+        console.log("req");
 });
 
 router.get('/logout', function(req, res) {

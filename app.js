@@ -1,34 +1,32 @@
-var express        = require("express"),
-    bodyParser     = require("body-parser"),
-    mongoose       = require("mongoose"),
-    flash          = require("connect-flash"),
-    app            = express(),
-    passport       = require("passport"),
-    LocalStrategy  = require("passport-local"),
-    methodOverride = require("method-override"),
-    Campground     = require("./models/campground"),
-    seedDB         = require("./seeds"),
-    Comment        = require("./models/comment"),
+const express        = require("express")
+    bodyParser     = require("body-parser")
+    mongoose       = require("mongoose")
+    flash          = require("connect-flash")
+    app            = express()
+    passport       = require("passport")
+    LocalStrategy  = require("passport-local")
+    methodOverride = require("method-override")
     User           = require("./models/user")
 
-var commentRoutes    = require("./routes/comments"),
-    campgroundRoutes = require("./routes/campgrounds"),
-    indexRoutes      = require("./routes/index")
+const commentRoutes    = require("./routes/comments")
+      campgroundRoutes = require("./routes/campgrounds")
+      indexRoutes      = require("./routes/index")
     
-console.log(process.env.DATABASEURL);
-mongoose.connect(process.env.DATABASEURL, {
-    useMongoClient: true
-});
-/*mongoose.connect("mongodb://grkmus:carter@ds231315.mlab.com:31315/yelpcampgrkmus", {
-    useMongoClient: true
-});*/
+//console.log(process.env.DATABASEURL);
+
+mongoose.connect('mongodb://localhost/yelp-camp', { useNewUrlParser: true })
+.then(()=> {
+    console.log('You did it! Your MongoDB is running.')
+}).catch(err => {
+    console.error('Something went wrong!')
+    console.error(err)
+})
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 app.use(methodOverride("_method"));
 app.use(express.static(__dirname + "/public"));
 app.use(flash());
-//seedDB();
 
 //PASSPORT CONFIGURATION
 app.use(require("express-session")({
@@ -54,7 +52,6 @@ app.use(indexRoutes);
 app.use("/campgrounds",campgroundRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
 
-//============SERVER LISTENS============//
-app.listen(process.env.PORT, process.env.IP, function(){
+app.listen('5000', function(){
     console.log("Yelp camp server has started");
 });
